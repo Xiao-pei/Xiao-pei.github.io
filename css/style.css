@@ -416,14 +416,14 @@
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 12px;
+  font-size: 13px;
 }
 .content th {
   padding: 8px;
   border-bottom: 1px dashed $color-code-border;
   color: #eee;
   font-weight: bold;
-  font-size: 13px;
+  font-size: 14px;
 }
 .content td {
   padding: 9px 8px 0;
@@ -451,7 +451,7 @@ body {
   background-color: #1d1f21;
   color: #c9cacc;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 15px;
   font-family: "Menlo", "Meslo LG", monospace;
   line-height: 1.725;
   text-rendering: geometricPrecision;
@@ -737,7 +737,7 @@ body {
   letter-spacing: 0.01em;
   font-weight: 200;
   font-style: normal;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
 }
 #header-post #nav ul {
   line-height: 15px;
@@ -804,7 +804,7 @@ body {
 }
 #header-post #toc .toc-level-2 {
   color: #c9cacc;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
 }
 #header-post #toc .toc-level-2:before {
   color: #2bbc8a;
@@ -812,11 +812,11 @@ body {
 }
 #header-post #toc .toc-level-3 {
   color: #666;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
 }
 #header-post #toc .toc-level-4 {
   color: #525252;
-  font-size: 0.4rem;
+  font-size: 0.65rem;
 }
 #header-post #toc .toc-level-5 {
   display: none;
@@ -1017,7 +1017,7 @@ body {
   margin-right: 16px;
   min-width: 100px;
   color: #666;
-  font-size: 22px;
+  font-size: 14px;
 }
 @media (min-width: 480px) {
   .post-list .post-item {
@@ -1179,7 +1179,7 @@ article .content .caption {
 }
 #archive .post-list .post-item .meta {
   display: block;
-  margin-right: 16px;
+  margin-right: 14px;
   min-width: 100px;
   color: #666;
   font-size: 14px;
