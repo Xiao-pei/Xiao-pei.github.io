@@ -450,9 +450,9 @@ body {
   flex-direction: column;
   background-color: #1d1f21;
   color: #c9cacc;
-  font-weight: 400;
+  font-weight: 300;
   font-size: 15px;
-  font-family: "Menlo", "Meslo LG", monospace;
+  font-family: "Menlo", "Meslo LG", "Source Han Sans", monospace;
   line-height: 1.725;
   text-rendering: geometricPrecision;
   -moz-osx-font-smoothing: grayscale;
