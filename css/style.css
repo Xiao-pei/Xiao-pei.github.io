@@ -452,7 +452,7 @@ body {
   color: #c9cacc;
   font-weight: 300;
   font-size: 15px;
-  font-family: "Menlo", "Meslo LG", "Source Han Sans", monospace;
+  font-family: "Helvetica", "Source Han Sans", "PingFang SC";
   line-height: 1.725;
   text-rendering: geometricPrecision;
   -moz-osx-font-smoothing: grayscale;
@@ -538,7 +538,7 @@ body {
   }
 }
 .max-width {
-  max-width: 48rem;
+  max-width: 46rem;
 }
 @media (max-width: 480px) {
   .px3 {
@@ -1323,57 +1323,70 @@ article .content .caption {
   color: #c9cacc;
 }
 .highlight {
-  background: #2b2b2b;
-  color: #bababa;
-}
-.highlight .code .strong,
-.highlight .code .emphasis {
-  color: #a8a8a2;
-}
-.highlight .code .bullet,
-.highlight .code .quote,
-.highlight .code .link,
-.highlight .code .number,
-.highlight .code .regexp,
-.highlight .code .literal {
-  color: #6896ba;
-}
-.highlight .code .code,
-.highlight .code .selector-class {
-  color: #a6e22e;
-}
-.highlight .code .emphasis {
-  font-style: italic;
+  background: #282b2e;
+  color: #e0e2e4;
 }
 .highlight .code .keyword,
 .highlight .code .selector-tag,
-.highlight .code .section,
-.highlight .code .attribute,
+.highlight .code .literal,
+.highlight .code .selector-id {
+  color: #93c763;
+}
+.highlight .code .number {
+  color: #ffcd22;
+}
+.highlight .code .attribute {
+  color: #668bb0;
+}
+.highlight .code .code,
+.highlight .code .class .title,
+.highlight .code .section {
+  color: #fff;
+}
+.highlight .code .regexp,
+.highlight .code .link {
+  color: #d39745;
+}
+.highlight .code .meta {
+  color: #557182;
+}
+.highlight .code .tag,
 .highlight .code .name,
-.highlight .code .variable {
-  color: #cb7832;
-}
-.highlight .code .params {
-  color: #b9b9b9;
-}
-.highlight .code .string,
+.highlight .code .bullet,
 .highlight .code .subst,
+.highlight .code .emphasis,
 .highlight .code .type,
 .highlight .code .built_in,
-.highlight .code .builtin-name,
-.highlight .code .symbol,
-.highlight .code .selector-id,
 .highlight .code .selector-attr,
 .highlight .code .selector-pseudo,
+.highlight .code .addition,
+.highlight .code .variable,
 .highlight .code .template-tag,
-.highlight .code .template-variable,
-.highlight .code .addition {
-  color: #e0c46c;
+.highlight .code .template-variable {
+  color: #8cbbad;
+}
+.highlight .code .string,
+.highlight .code .symbol {
+  color: #ec7600;
 }
 .highlight .code .comment,
-.highlight .code .deletion,
-.highlight .code .meta {
-  color: #7f7f7f;
+.highlight .code .quote,
+.highlight .code .deletion {
+  color: #818e96;
+}
+.highlight .code .selector-class {
+  color: #a082bd;
+}
+.highlight .code .keyword,
+.highlight .code .selector-tag,
+.highlight .code .literal,
+.highlight .code .doctag,
+.highlight .code .title,
+.highlight .code .section,
+.highlight .code .type,
+.highlight .code .name,
+.highlight .code .strong {
+  font-weight: bold;
 }
 pre {
   overflow-x: auto;
