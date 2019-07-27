@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="Move semantics​    最近在读一本名叫“C++ High Performance”的书，觉得有一定帮助，学习了一点现代的C++，故记录下自己通俗的理解。 Rule of three​    前人的经验告诉我们，一个类应该负责好自己所拥有的资源的管理，当一个类被复制（copy），被赋值（assign）到其他类或是被析构（destruct）的时候，它应对所拥有的资源也应该做出相应的正确">
+<meta name="keywords" content="Coding,Cpp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="I learned something today: C++ (part II)">
+<meta property="og:url" content="http://yoursite.com/2019/07/25/c-plus-plus-note-2/index.html">
+<meta property="og:site_name" content="SWCN">
+<meta property="og:description" content="Move semantics​    最近在读一本名叫“C++ High Performance”的书，觉得有一定帮助，学习了一点现代的C++，故记录下自己通俗的理解。 Rule of three​    前人的经验告诉我们，一个类应该负责好自己所拥有的资源的管理，当一个类被复制（copy），被赋值（assign）到其他类或是被析构（destruct）的时候，它应对所拥有的资源也应该做出相应的正确">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-07-27T12:52:58.903Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="I learned something today: C++ (part II)">
+<meta name="twitter:description" content="Move semantics​    最近在读一本名叫“C++ High Performance”的书，觉得有一定帮助，学习了一点现代的C++，故记录下自己通俗的理解。 Rule of three​    前人的经验告诉我们，一个类应该负责好自己所拥有的资源的管理，当一个类被复制（copy），被赋值（assign）到其他类或是被析构（destruct）的时候，它应对所拥有的资源也应该做出相应的正确">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>I learned something today: C++ (part II)</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="https://github.com/Xiao-pei?tab=repositories">项目</a></li>
+         
+          <li><a href="/Search/">搜索</a></li>
+         
+          <li><a href="/Links/">Links</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2019/07/21/c-plus-plus-note-1/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/07/25/c-plus-plus-note-2/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&text=I learned something today: C++ (part II)"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&title=I learned something today: C++ (part II)"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&is_video=false&description=I learned something today: C++ (part II)"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=I learned something today: C++ (part II)&body=Check out this article: http://yoursite.com/2019/07/25/c-plus-plus-note-2/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&title=I learned something today: C++ (part II)"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&title=I learned something today: C++ (part II)"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&title=I learned something today: C++ (part II)"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&title=I learned something today: C++ (part II)"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&name=I learned something today: C++ (part II)&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Move-semantics"><span class="toc-number">1.</span> <span class="toc-text">Move semantics</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Rule-of-three"><span class="toc-number">1.1.</span> <span class="toc-text">Rule of three</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Rule-of-five-and-Move-semantics"><span class="toc-number">1.2.</span> <span class="toc-text">Rule of five and Move semantics</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index my4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        I learned something today: C++ (part II)
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">SWCN</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2019-07-25T12:24:25.000Z" itemprop="datePublished">2019-07-25</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/Coding/">Coding</a>, <a class="tag-link" href="/tags/Cpp/">Cpp</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="Move-semantics"><a href="#Move-semantics" class="headerlink" title="Move semantics"></a>Move semantics</h1><p>​    最近在读一本名叫“<em>C++ High Performance</em>”的书，觉得有一定帮助，学习了一点现代的C++，故记录下自己通俗的理解。</p>
+<h2 id="Rule-of-three"><a href="#Rule-of-three" class="headerlink" title="Rule of three"></a>Rule of three</h2><p>​    前人的经验告诉我们，一个类应该负责好自己所拥有的资源的管理，当一个类被复制（copy），被赋值（assign）到其他类或是被析构（destruct）的时候，它应对所拥有的资源也应该做出相应的正确的操作。这一理念在实践中被提炼为 <em>the rule of three</em>。“<em>three</em>” 代表一个类的 copy-constructor，copy-assignment 和 destructor 三个成员函数，如果你自定义了这三个函数中的其中一个，那么你很有可能还需明确定义其他两个函数。如下面Buffer类</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Buffer</span> &#123;</span> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// other functions...</span></span><br><span class="line">    <span class="comment">// Copy constructor  </span></span><br><span class="line">    Buffer(<span class="keyword">const</span> Buffer&amp; other) : size_&#123;other.size_&#125; &#123;    </span><br><span class="line">        ptr_ = <span class="keyword">new</span> <span class="keyword">float</span>[size_];    </span><br><span class="line">        <span class="built_in">std</span>::copy(other.ptr_, other.ptr_ + size_, ptr_);  </span><br><span class="line">    &#125; </span><br><span class="line">    <span class="comment">// Copy assignment</span></span><br><span class="line">    <span class="keyword">auto</span>&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> Buffer&amp; other) &#123;</span><br><span class="line">        <span class="keyword">auto</span> tmp = <span class="keyword">new</span> <span class="keyword">float</span>[other.size_];</span><br><span class="line">        <span class="keyword">delete</span> [] ptr_;</span><br><span class="line">        ptr_ = tmp;</span><br><span class="line">        size_ = other.size_;    </span><br><span class="line">        <span class="built_in">std</span>::copy(other.ptr_, other.ptr_ + size_, ptr_);</span><br><span class="line">        <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="comment">// Destructor  </span></span><br><span class="line">    ~Buffer() &#123;</span><br><span class="line">        <span class="keyword">delete</span> [] ptr_; </span><br><span class="line">        ptr_ = <span class="literal">nullptr</span>;  </span><br><span class="line">    &#125;</span><br><span class="line">   <span class="keyword">private</span>:  <span class="keyword">size_t</span> size_&#123;<span class="number">0</span>&#125;;  <span class="keyword">float</span>* ptr_&#123;<span class="literal">nullptr</span>&#125;; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​        然而，这样有很多复制的操作，复制是有代价的，有时我们并不想要复制，传入的对象也不需要被保留，比如当我们把一个函数的返回值直接作为函数参数时。使用指针可以避免一些复制，但管理指针也并不那么方便：只能靠程序员自己。</p>
+<h2 id="Rule-of-five-and-Move-semantics"><a href="#Rule-of-five-and-Move-semantics" class="headerlink" title="Rule of five and Move semantics"></a>Rule of five and Move semantics</h2><p>​    于是，在<em>the rule of three</em> 的基础上，有了 <em>the rule of five</em> 。为了解决复制带来的问题，我们定义两个全新的函数：move constructor 和move assignment operator 。从名字就可以猜到，这两个函数不复制，而是直接移动资源。一个类定义了自己的move constructor后，就可以实现move semantics。</p>
+<p>​    下面举一个利用move semantics带来好处的例子：假设我们要把若干个前面的buffer类，放入<code>std::vector</code>里。当<code>std::vector</code>容量不够的时候，必须重新分配更多的内存，然后利用拷贝构造函数，把原来内存里的旧对象一个个复制到新内存中，然后再摧毁旧的对象。但是如果我们的buffer类定义了move constructor ，<code>std::vector</code>就可以直接把旧对象移过来。</p>
+<p>​    那么事不宜迟，我们马上为buffer类加上move constructor 和move assignment operator ：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Buffer(Buffer&amp;&amp; other) <span class="keyword">noexcept</span>  <span class="comment">//不使用noexcept将不便于STL使用move semantics</span></span><br><span class="line">    : ptr_&#123;other.ptr_&#125;, size_&#123;other.size_&#125; &#123;    </span><br><span class="line">        other.ptr_ = <span class="literal">nullptr</span>;</span><br><span class="line">        other.size_ = <span class="number">0</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line"><span class="keyword">auto</span>&amp; <span class="keyword">operator</span>=(Buffer&amp;&amp; other) <span class="keyword">noexcept</span> &#123; </span><br><span class="line">    ptr_ = other.ptr_;</span><br><span class="line">    size_ = other.size_;</span><br><span class="line">    other.ptr_ = <span class="literal">nullptr</span>;</span><br><span class="line">    other.size_ = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​    可以看到，我们把拷贝构造函数里的 <code>Buffer&amp;</code>改成了 <code>Buffer&amp;&amp;</code> ：有或是没有<code>&amp;&amp;</code>，就代表了我们是想要“move”还是“copy”。<code>&amp;&amp;</code>这个东西用C++术语来说，叫做<em>Rvalue Reference Declarator</em> ，表示这两个函数接收所谓的<em>r-value</em> ，当我们调用构造函数，传入的是<em>r-value</em>时，我们便运用的是“move”而不是“copy”。</p>
+<p>​    那么什么是<em>r-value</em>？粗要的理解，<em>r-value</em>就是我们没给名字的对象。例如我们直接用函数的返回值做参数。同时也可以用 <code>std::move()</code> 得到<em>r-value</em>。但是注意，int，float等等原始的数据类型只会被拷贝。见如下代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> x = <span class="number">1</span>;</span><br><span class="line">	<span class="built_in">string</span> s = <span class="string">"223"</span>;</span><br><span class="line">	<span class="keyword">auto</span> y = move(x); <span class="comment">//没有效果，相当于 auto y = x；</span></span><br><span class="line">	<span class="keyword">auto</span> z = move(s);</span><br><span class="line">	<span class="built_in">cout</span>&lt;&lt;x&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">	<span class="built_in">cout</span>&lt;&lt;s&lt;&lt;<span class="built_in">endl</span>; <span class="comment">//‘s’ is moved</span></span><br><span class="line">	<span class="built_in">cout</span>&lt;&lt;y&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">	<span class="built_in">cout</span>&lt;&lt;z&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*输出：</span></span><br><span class="line"><span class="comment">1</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">1</span></span><br><span class="line"><span class="comment">223</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+  </div>
+</article>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="https://github.com/Xiao-pei?tab=repositories">项目</a></li>
+         
+          <li><a href="/Search/">搜索</a></li>
+         
+          <li><a href="/Links/">Links</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Move-semantics"><span class="toc-number">1.</span> <span class="toc-text">Move semantics</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Rule-of-three"><span class="toc-number">1.1.</span> <span class="toc-text">Rule of three</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Rule-of-five-and-Move-semantics"><span class="toc-number">1.2.</span> <span class="toc-text">Rule of five and Move semantics</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/07/25/c-plus-plus-note-2/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&text=I learned something today: C++ (part II)"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&title=I learned something today: C++ (part II)"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&is_video=false&description=I learned something today: C++ (part II)"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=I learned something today: C++ (part II)&body=Check out this article: http://yoursite.com/2019/07/25/c-plus-plus-note-2/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&title=I learned something today: C++ (part II)"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&title=I learned something today: C++ (part II)"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&title=I learned something today: C++ (part II)"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&title=I learned something today: C++ (part II)"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/07/25/c-plus-plus-note-2/&name=I learned something today: C++ (part II)&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2019 Xiao-pei
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="https://github.com/Xiao-pei?tab=repositories">项目</a></li>
+         
+          <li><a href="/Search/">搜索</a></li>
+         
+          <li><a href="/Links/">Links</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?7d1cad344220a4aebcb8e34bd25ce3d3";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+<!-- Disqus Comments -->
+
+
